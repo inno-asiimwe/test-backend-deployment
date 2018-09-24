@@ -1,0 +1,64 @@
+version: 2
+defaults: &defaults
+  docker:
+    - image: circleci/php:7.1-jessie-node-browsers
+    - image: postgres:9.6
+      environment:
+        POSTGRES_USER: root
+        POSTGRES_DB: watch_tower_dev_test
+  working_directory: ~/watch-tower
+
+persist_to_workspace: &persist_to_workspace
+  persist_to_workspace:
+    root: .
+    paths: .
+
+attach_workspace: &attach_workspace
+  attach_workspace:
+    at: ~/watch-tower
+
+jobs:
+  checkout:
+    <<: *defaults
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            # "composer.lock" can be used if it is committed to the repo
+            - v1-dependencies-{{ checksum "composer.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+      - run:
+          name: Install Composer Packages
+          command: composer install
+      - save_cache:
+          key: composer-v1-{{ checksum "composer.lock" }}
+          paths:
+            - vendor
+      - *persist_to_workspace
+
+  test:
+    <<: *defaults
+    steps:
+      - *attach_workspace
+      - run:
+          name: Install Laravel Test pre-requisites
+          command: |
+            sudo apt update
+            sudo apt install zlib1g-dev libsqlite3-dev
+            sudo docker-php-ext-install zip
+      - run:
+          name: Wait for postgres to be ready
+          command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Run Watch tower tests
+          command: vendor/bin/phpunit
+
+workflows:
+  version: 2
+  run_tests:
+    jobs:
+      - checkout
+      - test:
+          requires:
+            - checkout
