@@ -37,7 +37,7 @@ jobs:
             - vendor
       - *persist_to_workspace
 
-  test:
+  test_and_report:
     <<: *defaults
     steps:
       - *attach_workspace
@@ -48,17 +48,25 @@ jobs:
             sudo apt install zlib1g-dev libsqlite3-dev
             sudo docker-php-ext-install zip
       - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+      - run:
           name: Wait for postgres to be ready
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
       - run:
           name: Run Watch tower tests
-          command: vendor/bin/phpunit
+          command: |
+            ./cc-test-reporter before-build
+            composer test
+            ./cc-test-reporter after-build --coverage-input-type clover --exit-code $?
 
 workflows:
   version: 2
   run_tests:
     jobs:
       - checkout
-      - test:
+      - test_and_report:
           requires:
             - checkout

@@ -34,3 +34,5 @@ sample.envs
 # Google API
 credentials.json
 token.json
+
+build/
