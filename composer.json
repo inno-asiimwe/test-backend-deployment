@@ -50,7 +50,7 @@
             "@php artisan package:discover"
         ],
         "test" : [
-            "vendor/bin/phpunit"
+            "vendor/bin/phpunit --debug --coverage-clover build/logs/clover.xml"
         ]
     },
     "config": {
