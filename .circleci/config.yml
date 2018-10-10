@@ -6,6 +6,7 @@ defaults: &defaults
       environment:
         POSTGRES_USER: root
         POSTGRES_DB: watch_tower_dev_test
+    - image: circleci/redis:4.0.11
   working_directory: ~/watch-tower
 
 persist_to_workspace: &persist_to_workspace
@@ -55,6 +56,10 @@ jobs:
       - run:
           name: Wait for postgres to be ready
           command: dockerize -wait tcp://localhost:5432 -timeout 1m
+      - run:
+          name: Wait for redis to be ready
+          command: |
+            dockerize -wait tcp://localhost:6379 -timeout 1m
       - run:
           name: Run Watch tower tests
           command: |
