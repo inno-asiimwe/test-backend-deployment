@@ -31,8 +31,7 @@ deploy/*.yml-*
 deploy/*.config
 sample.envs
 
-# Google API
-credentials.json
-token.json
-
 build/
+
+# Test Coverage Report
+report

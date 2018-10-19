@@ -29,3 +29,4 @@ Route::get('/redis', function () {
     $result = Redis::get("user") . ' ' . $visits;
     return $result;
 });
+Route::get('fellows', 'FellowController@index');
