@@ -1,0 +1,6 @@
+.circleci
+docker/Dockefile
+laradock
+.github
+.codeclimate
+

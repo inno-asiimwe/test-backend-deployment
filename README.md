@@ -93,6 +93,36 @@ Run the command below:
 composer test
 ```
 
+## Running a Docker development Environment
+### Prerequisites
+ - docker
+
+### Setup local docker development environment
+* Clone the repository and navigate to the root of the folder structure.
+
+### To start the local development server
+Run the command below:
+```
+make start
+```
+### Running tests
+Run the command below:
+```
+make test
+```
+### To connect to a terminal in the application container
+```
+make ssh
+```
+### Stoping the development server
+```
+make stop
+```
+### Cleaning up local environment
+```
+make clean
+```
+
 ## Development Guidelines
 * Follow branch naming, commit message and pull request conventions [here](https://github.com/andela/engineering-playbook/tree/master/5.%20Developing/Conventions)
 * Follow PSR-2: Coding Style Guide for PHP [here](https://www.php-fig.org/psr/psr-2/)
