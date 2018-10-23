@@ -29,7 +29,7 @@ class FellowController extends Controller
      */
     public function index(Request $request)
     {   $perPage = $request->query('perPage') ?? 10;
-        $filter = $request->query('filter') ?? 'onTrack';
+        $filter = $request->query('filter') ?? 'gteWk5OffTrack';
         $fellowsFiltered = Fellow::all($filter);
         $fellowCountPerCategoryAll = [];
         if (empty($fellowsFiltered)) {

@@ -5,6 +5,13 @@ namespace App;
 
 class ProcessData 
 {
+    public static $sharedValueKeys = ['id', 'fullName', 'firstName', 'lastName', 'email', 'partnerName',
+            'partnerId', 'cohort', 'location'];
+    public static $otherCriteriaKeys = ['eventDate', 'eventNumber', 'staffId', 'submitterFirstName',
+    'submitterLastName', 'submitterEmail', 'submitterRole'];
+    
+    public static $ratingKeys = ['quality', 'quantity' , 'initiative' , 'communication' ,'professionalism' , 'integration'];
+    
     /**
      * Group input array by week and fellow rating.
      * @param array fellows data aggregated by fellow in an indexed array
@@ -47,7 +54,7 @@ class ProcessData
     public static function getAverageRatings($ratingsArray, $keys){
         $averageRatings = [];
         foreach($keys as $key){
-            $averageRatings[$key] = number_format(collect($ratingsArray)->avg($key), 2, '.', '');            
+            $averageRatings[$key] = number_format(collect($ratingsArray)->avg($key), 1, '.', '');            
         }
         return $averageRatings;
     }
@@ -82,25 +89,23 @@ class ProcessData
             if(!array_key_exists($fellowId, $transformedFellowArray)){
                 $transformedFellowArray[$fellowId] = [];
             }
-            $keys = ['id', 'fullName', 'firstName', 'lastName', 'email', 'partnerName',
-            'partnerId', 'level', 'cohort', 'location'];
-            foreach($keys as $key){
+            foreach(ProcessData::$sharedValueKeys as $key){
                 if (!array_key_exists($key, $transformedFellowArray[$fellowId])){
                     $transformedFellowArray[$fellowId][$key] = $fellowRow[$key];
                 }
             }
-            $ratingKeys = ['quality', 'quantity' , 'initiative' , 'communication' ,'professionalism' , 'integration'];
+            if (!array_key_exists('level', $transformedFellowArray[$fellowId])){
+                $levelString = $fellowRow['level'] == 'D0A' ? ' Simulations': ' Apprenticeship';
+                $transformedFellowArray[$fellowId]['level'] = $fellowRow['level'] . $levelString;
+            }
             
-            $transformedFellowArray[$fellowId]["ratings"][$fellowRow['week']] = collect($fellowRow)->only($ratingKeys)->all();
-            
-            $otherCriteriaKeys = ['eventDate', 'eventNumber', 'staffId', 'submitterFirstName',
-            'submitterLastName', 'submitterEmail', 'submitterRole'];
+            $transformedFellowArray[$fellowId]["ratings"][$fellowRow['week']] = collect($fellowRow)->only(ProcessData::$ratingKeys)->all();
            
-            $transformedFellowArray[$fellowId]["otherCriteria"][$fellowRow['week']] = collect($fellowRow)->only($otherCriteriaKeys)->all();
+            $transformedFellowArray[$fellowId]["otherCriteria"][$fellowRow['week']] = collect($fellowRow)->only(ProcessData::$otherCriteriaKeys)->all();
 
             $transformedFellowArray[$fellowId]["averageRatings"] 
             = ProcessData::getAverageRatings(
-                $transformedFellowArray[$fellowId]["ratings"], $ratingKeys 
+                $transformedFellowArray[$fellowId]["ratings"], ProcessData::$ratingKeys 
             );   
         }
         return $transformedFellowArray;

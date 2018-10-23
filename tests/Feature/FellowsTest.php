@@ -64,7 +64,7 @@ class FellowsTest extends TestCase
         $sheetService = Mockery::mock(SheetsService::class);
         $sheetService->shouldReceive('getSheetData')
             ->once()
-            ->andReturn($fellowsArray);
+            ->andReturn([]);
             
         $this->app->instance(SheetsService::class, $sheetService);
         $response = $this->json('GET', '/api/v1/fellows')

@@ -260,7 +260,7 @@ class ProcessDataTest extends TestCase
             "email" => "Gregory.Webster@andela.com",
             "partnerName" => "#N/A",
             "partnerId" => "#N/A",
-            "level" => "D0B",
+            "level" => "D0A",
             "week" => "Week 1",
             "cohort" => "Class 2 - LOS",
             "location" => "Lagos",
@@ -317,7 +317,7 @@ class ProcessDataTest extends TestCase
                     "email" => "Gregory.Webster@andela.com",
                     "partnerName" => "#N/A",
                     "partnerId" => "#N/A",
-                    "level" => "D0B",
+                    "level" => "D0A Simulations",
                     "cohort" => "Class 2 - LOS",
                     "location" => "Lagos",
                     
@@ -340,12 +340,12 @@ class ProcessDataTest extends TestCase
                         ],
                     ],
                     "averageRatings" => [
-                        "quantity" => "1.00",
-                        "quality" => "2.00",
-                        "initiative" => "1.00",
-                        "communication" => "1.00",
-                        "professionalism" => "1.00",
-                        "integration" => "0.00",
+                        "quantity" => "1.0",
+                        "quality" => "2.0",
+                        "initiative" => "1.0",
+                        "communication" => "1.0",
+                        "professionalism" => "1.0",
+                        "integration" => "0.0",
                     ],
                     "otherCriteria" => [
                         "Week 1" => [
@@ -376,7 +376,7 @@ class ProcessDataTest extends TestCase
                     "email" => "Amber.Gill@andela.com",
                     "partnerName" => "#N/A",
                     "partnerId" => "#N/A",
-                    "level" => "D0B",
+                    "level" => "D0B Apprenticeship",
                     "cohort" => "Class 2 - LOS",
                     "location" => "Lagos",
                     
@@ -399,12 +399,12 @@ class ProcessDataTest extends TestCase
                         ],
                     ],
                     "averageRatings" => [
-                            "quantity" => "1.00",
-                            "quality" => "1.00",
-                            "initiative" => "1.00",
-                            "communication" => "1.00",
-                            "professionalism" => "1.00",
-                            "integration" => "0.00",
+                            "quantity" => "1.0",
+                            "quality" => "1.0",
+                            "initiative" => "1.0",
+                            "communication" => "1.0",
+                            "professionalism" => "1.0",
+                            "integration" => "0.0",
                     ],
                     "otherCriteria" => [
                         "Week 1" => [
@@ -443,12 +443,12 @@ class ProcessDataTest extends TestCase
     {
 
         $expected = [
-            "quantity" => "1.00",
-            "quality" => "2.00",
-            "initiative" => "1.00",
-            "communication" => "1.00",
-            "professionalism" => "1.00",
-            "integration" => "0.00",
+            "quantity" => "1.0",
+            "quality" => "2.0",
+            "initiative" => "1.0",
+            "communication" => "1.0",
+            "professionalism" => "1.0",
+            "integration" => "0.0",
         ];
             $inputArray = [
                         "Week 1" => [

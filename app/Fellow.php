@@ -9,11 +9,11 @@ class Fellow
      */
     public static function bulkCreate($fellows, $minutes = 60)
     {
-        Redis::multi();
-        foreach ($fellows as $id=>$fellow) {
-            Redis::setex($id, $minutes * 60, json_encode($fellow)); 
-        }
-        Redis::exec();
+        Redis::pipeline(function ($pipe) use ($fellows, $minutes){
+            foreach ($fellows as $id=>$fellow) {
+                $pipe->setex($id, $minutes * 60, json_encode($fellow)); 
+            }
+        });
     }
 
 
