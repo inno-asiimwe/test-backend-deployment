@@ -2,7 +2,7 @@
 
 namespace App;
 
-define("ROOT_DIR", __DIR__ .'/');
+define("ROOT_DIR", __DIR__ .'/'); // @codeCoverageIgnore
 
 use Google_Client;
 use Google_Service_Sheets;

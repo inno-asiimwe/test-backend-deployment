@@ -59,28 +59,29 @@ class ProcessDataTest extends TestCase
                 "communication" => "1",
                 "professionalism" => "1",
                 "integration" => "0",
-            ]];
-            $averageRating = [
-                "quantity" => "1",
-                "quality" => "2",
-                "initiative" => "1",
-                "communication" => "1",
-                "professionalism" => "1",
-                "integration" => "0",
-            ];
-            $basicInfo = [
-                "id" => "AND/F/007",
-                "fullName" => "Gregory Webster",
-                "firstName" => "Gregory",
-                "lastName" => "Webster",
-                "email" => "Gregory.Webster@andela.com",
-                "partnerName" => "#N/A",
-                "partnerId" => "#N/A",
-                "level" => "D0B",
-                "cohort" => "Class 2 - LOS",
-                "location" => "Lagos",
-                "status" => "gteWk5OffTrack",
-            ];
+            ]
+        ];
+        $averageRating = [
+            "quantity" => "1",
+            "quality" => "2",
+            "initiative" => "1",
+            "communication" => "1",
+            "professionalism" => "1",
+            "integration" => "0",
+        ];
+        $basicInfo = [
+            "id" => "AND/F/007",
+            "fullName" => "Gregory Webster",
+            "firstName" => "Gregory",
+            "lastName" => "Webster",
+            "email" => "Gregory.Webster@andela.com",
+            "partnerName" => "#N/A",
+            "partnerId" => "#N/A",
+            "level" => "D0B",
+            "cohort" => "Class 2 - LOS",
+            "location" => "Lagos",
+            "status" => "gteWk5OffTrack",
+        ];
         $inputArray = [
             "AND/F/007" => [
                 "id" => "AND/F/007",
@@ -102,10 +103,8 @@ class ProcessDataTest extends TestCase
                     "integration" => "0",
                 ],
             ],
-              
-            ];
-                // return [$inputArray, $expected, $ratings];
-        if ($weekStatus = "afterWk5") {
+        ];
+        if ($weekStatus === "afterWk5") {
             $inputArray["AND/F/007"]["ratings"] = $ratings;
             $basicInfo["ratings"] = $ratings;
             $basicInfo["averageRatings"] = $averageRating;
@@ -118,7 +117,7 @@ class ProcessDataTest extends TestCase
             return [$inputArray, $expected];
         }
 
-        elseif ($weekStatus = "beforeWk5") {
+        elseif ($weekStatus === "beforeWk5") {
             $inputArray["AND/F/007"]["ratings"] = array_slice($ratings, 0, 4);
             $basicInfo["ratings"] = array_slice($ratings, 0, 4);
             $basicInfo["status"] = "ltWk5OffTrack";
@@ -128,6 +127,29 @@ class ProcessDataTest extends TestCase
                 "ltWk5OffTrack" => 1,
                 "gteWk5OffTrack" => 0,
                 "onTrack" => 0
+            ];
+            return [$inputArray, $expected];
+        }
+
+        elseif ($weekStatus === "onTrack") {
+            $avRating =[
+                "quantity" => "1",
+                "quality" => "2",
+                "initiative" => "1",
+                "communication" => "1",
+                "professionalism" => "1",
+                "integration" => "1",
+            ];
+            $inputArray["AND/F/007"]["ratings"] = array_slice($ratings, 0, 4);
+            $inputArray["AND/F/007"]["averageRatings"] = $avRating;
+            $basicInfo["ratings"] = array_slice($ratings, 0, 4);
+            $basicInfo["status"] = "onTrack";
+            $basicInfo["averageRatings"] = $avRating;
+            $expected[0]["fellow:onTrack-AND/F/007"] = $basicInfo;
+            $expected[1] = [
+                "ltWk5OffTrack" => 0,
+                "gteWk5OffTrack" => 0,
+                "onTrack" => 1
             ];
             return [$inputArray, $expected];
         }
@@ -485,6 +507,22 @@ class ProcessDataTest extends TestCase
     {
 
         $data = $this->getInputAndExpectedData("beforeWk5");
+        $inputArray = $data[0];
+        $expected = $data[1];
+        $actual = ProcessData::splitByWeek5AndRating($inputArray);
+    
+        $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Checks that the the function executes properly
+     * 
+     * @return void
+     */
+    public function testSplitByWeek5AndRatingOnTrack()
+    {
+
+        $data = $this->getInputAndExpectedData("onTrack");
         $inputArray = $data[0];
         $expected = $data[1];
         $actual = ProcessData::splitByWeek5AndRating($inputArray);

@@ -21,9 +21,11 @@
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./app</directory>
             <exclude>
-            <directory suffix=".php">./app/Http/Controllers/Auth</directory>
-            <directory suffix=".php">./app/Http/Middleware</directory>
-            <directory suffix=".php">./app/Providers</directory>
+                <directory suffix=".php">./app/Http/Controllers/Auth/</directory>
+                <directory suffix=".php">./app/Http/Middleware/</directory>
+                <directory suffix=".php">./app/User.php</directory>
+                <directory suffix=".php">./app/Http/Kernel.php</directory>
+                <directory suffix=".php">./app/Providers/</directory>
             </exclude>
         </whitelist>
     </filter>
