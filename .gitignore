@@ -35,3 +35,7 @@ build/
 
 # Test Coverage Report
 report
+
+*.crt 
+*.key
+db-connect.json

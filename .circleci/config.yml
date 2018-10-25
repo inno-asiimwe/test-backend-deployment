@@ -18,7 +18,76 @@ attach_workspace: &attach_workspace
   attach_workspace:
     at: ~/watch-tower
 
+build_and_push_image: &build_and_push_image
+  run:
+    name: build image
+    command: |
+      export IMG_TAG=$(echo $CIRCLE_SHA1 | cut -c -7)
+      echo $IMG_TAG
+      docker login -u _json_key -p "$(echo $GCLOUD_SERVICE_KEY)" https://gcr.io
+      docker build -f docker/prod/Dockerfile -t gcr.io/$GCP_PROJECT_ID/$PROJECT_NAME:$IMG_TAG .
+      docker push gcr.io/$GCP_PROJECT_ID/$PROJECT_NAME:$IMG_TAG
+
+configure_gcloud: &configure_gcloud
+  run:
+    name: configure gcloud default settings
+    command: |
+      gcloud auth activate-service-account --key-file ~/watch-tower/auth_key.json
+      gcloud container clusters get-credentials k8-test --zone us-central1-a --project $GCP_PROJECT_ID
+
+generate_env_file: &generate_env_file
+  run:
+   name: Generate a .env
+   command: |
+     echo -e $env > .env
+
+
+deploy_to_kubernetes: &deploy_to_kubernetes
+  run:
+    name: Run ansible playbook to configure kubernetes
+    command: |
+      export IMG_TAG=$(echo $CIRCLE_SHA1 | cut -c -7)
+      cd watchtower-deployment-scripts
+      ansible-playbook ansible/backend/main.yml -vvv
+
+
 jobs:
+  deploy_to_staging:
+    docker:
+      - image: gcr.io/$GCP_PROJECT_ID/watchtower-frontend-base
+        auth:
+          username: _json_key
+          password: $GCLOUD_SERVICE_KEY
+        environment:
+          GOOGLE_APPLICATION_CREDENTIALS: /root/watch-tower/auth_key.json
+          DEPLOYMENT_SCRIPTS_REPO: git@github.com:andela/watchtower-deployment-scripts.git
+          IMAGE_TAG: $(echo $CIRCLE_SHA1 | cut -c -7)
+          namespace: default
+
+
+    working_directory: ~/watch-tower
+    steps:
+      - checkout
+      - setup_remote_docker
+      - *attach_workspace
+      - run: 
+          name: Add gcloud key to json file
+          command: echo $GCLOUD_SERVICE_KEY > ~/watch-tower/auth_key.json
+      - *generate_env_file
+      - run:
+          name: list folders
+          command: ls
+      - *configure_gcloud
+      - run: 
+          name: Delete old migration job
+          command: kubectl delete job watchtower-backend
+      - run:
+          name: Clone the deployment scripts repo
+          command: |
+            mkdir ~/.ssh/ && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git clone -b ft-attach-postgres-database-161544227 ${DEPLOYMENT_SCRIPTS_REPO}
+      - *build_and_push_image
+      - *deploy_to_kubernetes
   checkout:
     <<: *defaults
     steps:
@@ -75,4 +144,9 @@ workflows:
       - test_and_report:
           requires:
             - checkout
-
+      - deploy_to_staging:
+          requires:
+            - test_and_report
+          filters:
+            branches:
+              only: develop
